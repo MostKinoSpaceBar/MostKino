@@ -9,13 +9,10 @@
 body{
   margin:0;
   background:#f5f5f5;
-  font-family:sans-serif
+  font-family:sans-serif;
+  scroll-behavior:smooth
 }
-#pdf{
-  max-width:900px;
-  margin:auto;
-  padding:8px
-}
+#pdf{max-width:900px;margin:auto;padding:8px}
 canvas{
   width:100%;
   display:block;
@@ -31,44 +28,33 @@ canvas{
 
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
-const URL = 'menu.pdf';
-const container = document.getElementById('pdf');
+pdfjsLib.GlobalWorkerOptions.workerSrc=
+'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-(async () => {
-  const pdf = await pdfjsLib.getDocument(URL).promise;
-  const observer = new IntersectionObserver(entries=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){
-        renderPage(+e.target.dataset.page);
-        observer.unobserve(e.target);
-      }
-    });
-  },{rootMargin:'300px'});
+(async()=>{
+  const pdf=await pdfjsLib.getDocument('menu.pdf').promise,
+        box=document.getElementById('pdf'),
+        io=new IntersectionObserver(e=>e.forEach(x=>{
+          if(x.isIntersecting){
+            draw(+x.target.dataset.p);
+            io.unobserve(x.target);
+          }
+        }),{rootMargin:'300px'});
 
   for(let i=1;i<=pdf.numPages;i++){
-    const holder=document.createElement('div');
-    holder.dataset.page=i;
-    container.appendChild(holder);
-    observer.observe(holder);
+    const d=document.createElement('div');
+    d.dataset.p=i; box.appendChild(d); io.observe(d);
   }
 
-  async function renderPage(n){
-    const page=await pdf.getPage(n);
-    const viewport=page.getViewport({scale:1});
-    const scale=Math.min(container.clientWidth/viewport.width,1.5);
-
-    const canvas=document.createElement('canvas');
-    const ctx=canvas.getContext('2d');
-
-    const v=page.getViewport({scale});
-    canvas.width=v.width;
-    canvas.height=v.height;
-
-    await page.render({canvasContext:ctx,viewport:v}).promise;
-    container.querySelector(`[data-page="${n}"]`).replaceWith(canvas);
+  async function draw(n){
+    const p=await pdf.getPage(n),
+          v=p.getViewport({scale:1}),
+          s=Math.min(box.clientWidth/v.width,1.4),
+          c=document.createElement('canvas');
+    c.width=v.width*s; c.height=v.height*s;
+    await p.render({canvasContext:c.getContext('2d'),
+      viewport:p.getViewport({scale:s})}).promise;
+    box.querySelector(`[data-p="${n}"]`).replaceWith(c);
   }
 })();
 </script>
