@@ -6,63 +6,39 @@
 <title>01</title>
 
 <style>
-/* Полный мобильный reset против горизонтального скролла */
-*,*::before,*::after{
-  box-sizing:border-box;
-  max-width:100%;
+* {
+  box-sizing: border-box;
 }
 
-html,body{
-  margin:0;
-  width:100%;
-  overflow-x:hidden;
-  -webkit-text-size-adjust:100%;
-  background:#f5f5f5;
-  font-family:system-ui,-apple-system,sans-serif;
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #f5f5f5;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
-main{
-  max-width:600px;
-  margin:auto;
-  padding:12px;
-  background:#fff;
+main {
+  width: 100%;
+  height: 100vh;
+  background: #fff;
 }
 
-/* Медиа всегда вписываются */
-img,svg,video,canvas{
-  display:block;
-  width:100%;
-  height:auto;
-}
-
-/* Таблицы */
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-/* Текст не ломает ширину */
-p,h1,h2,h3,h4,h5,h6{
-  overflow-wrap:break-word;
+iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
 }
 </style>
 </head>
 
 <body>
 
-<main id="app"></main>
-
-<script>
-fetch('01.html')
-  .then(r=>r.text())
-  .then(html=>{
-    document.getElementById('app').innerHTML = html;
-  })
-  .catch(()=>{
-    document.getElementById('app').textContent =
-      'Не удалось загрузить меню';
-  });
-</script>
+<main>
+  <iframe src="01.html" loading="lazy"></iframe>
+</main>
 
 </body>
 </html>
